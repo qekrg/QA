@@ -6,3 +6,7 @@ WHERE price < 500
 SELECT DISTINCT maker
 FROM product
 WHERE type = 'printer'
+3. 
+SELECT model, ram, screen
+FROM Laptop
+Where price > 1000
