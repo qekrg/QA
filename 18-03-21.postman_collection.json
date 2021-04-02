@@ -1,0 +1,497 @@
+{
+	"info": {
+		"_postman_id": "c206778a-335e-4dd3-a919-eaac0ab34aba",
+		"name": "18/03/21",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//добавляем в переменную токен, полученный в респонсе\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"postman.setEnvironmentVariable(\"token\", jsonData.token);\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "Rust",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Rust123",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user_info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"start_qa_salary = 1000\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.start_qa_salary).to.eql(1000);\r",
+							"});\r",
+							"pm.test(\"you name - Rust\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.person.u_name[0]).to.eql(\"Rust\");\r",
+							"});\r",
+							"pm.test(\"Body is correct\", function () {\r",
+							"    pm.response.to.have.body({\"person\":{\"u_age\":34,\"u_name\":[\"Rust\",1000,34],\"u_salary_1_5_year\":4000},\"qa_salary_after_12_months\":2900.0,\"qa_salary_after_6_months\":2000,\"start_qa_salary\":1000}\r",
+							");\r",
+							"});\r",
+							"//проверяем правильность перемножения на коэффициенты\r",
+							"pm.test(\"Salary coefficient is ok\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.qa_salary_after_6_months).to.eql(pm.environment.get('salary')*2);\r",
+							"    pm.expect(jsonData.qa_salary_after_12_months).to.eql(pm.environment.get('salary')*2.9);\r",
+							"    });\r",
+							"\r",
+							"//сетаем в переменную salary1_5 значение из body респонса  \r",
+							"pm.test(\"Y_sal_1_5\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"salary1_5\", jsonData.person.u_salary_1_5_year);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "auth_token",
+							"value": "{{token}}",
+							"type": "text"
+						},
+						{
+							"key": "age",
+							"value": "34",
+							"type": "text"
+						},
+						{
+							"key": "salary",
+							"value": "{{salary}}",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Rust",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/user_info",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"user_info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "new_data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body is correct\", function () {\r",
+							"    pm.response.to.have.body({\r",
+							"    \"age\": 34,\r",
+							"    \"name\": \"Rust\",\r",
+							"    \"salary\": [\r",
+							"        1000,\r",
+							"        \"2000\",\r",
+							"        \"3000\"\r",
+							"    ]\r",
+							"}\r",
+							");\r",
+							"});\r",
+							"//проверкa правильности результата перемножения на коэффициенты\r",
+							"pm.test(\"Salary coefficient is ok\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    let sx2 = +(jsonData.salary[1]);\r",
+							"    let sx3 = +(jsonData.salary[2]);\r",
+							"    pm.expect(jsonData.salary[0]*2).to.eql(sx2);\r",
+							"    pm.expect(jsonData.salary[0]*3).to.eql(sx3);\r",
+							"    });\r",
+							"    \r",
+							"//проверкa что 2-й элемент массива salary больше 1-го и 0-го\r",
+							"pm.test(\"Comparison\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    let sx2 = +(jsonData.salary[1]);\r",
+							"    let sx3 = +(jsonData.salary[2]);\r",
+							"    let sx1 = jsonData.salary[0];\r",
+							"    pm.expect(sx3>sx2).to.true;\r",
+							"    pm.expect(sx3>sx1).to.true;\r",
+							"    });\r",
+							"    //достать значение из поля 'u_salary_1.5_year' и передать в поле salary запроса http://116.203.27.46:5002/get_test_user\r",
+							"    let sal = +(pm.environment.get(\"salary1_5\"));\r",
+							"    console.log(sal);\r",
+							"\r",
+							"    const options = {\r",
+							"        method: 'POST',\r",
+							"        url: 'http://116.203.27.46:5002/get_test_user',\r",
+							"        body: {\r",
+							"            mode: 'formdata',\r",
+							"            formdata: [\r",
+							"                {key: 'salary', value: sal},\r",
+							"                {key: 'auth_token', value: pm.environment.get('token')}\r",
+							"            ]\r",
+							"        }\r",
+							"    };\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "auth_token",
+							"value": "{{token}}",
+							"type": "text"
+						},
+						{
+							"key": "age",
+							"value": "34",
+							"type": "text"
+						},
+						{
+							"key": "salary",
+							"value": "{{salary}}",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Rust",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/new_data",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"new_data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_pet_info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body is correct\", function () {\r",
+							"    pm.response.to.have.body({\r",
+							"    \"age\": 34,\r",
+							"    \"daily_food\": 0.84,\r",
+							"    \"daily_sleep\": 175.0,\r",
+							"    \"name\": \"Rust\"\r",
+							"}\r",
+							");\r",
+							"});\r",
+							"//проверкa правильности результата перемножения на коэффициенты\r",
+							"pm.test(\"Weight coefficient is ok\", function () {\r",
+							"   var jsonData = pm.response.json();\r",
+							"   let wei = JSON.parse(pm.request.body.formdata.get('weight'));\r",
+							"    pm.expect(jsonData.daily_food).to.eql(wei*0.012);\r",
+							"    pm.expect(jsonData.daily_sleep).to.eql(wei*2.5);\r",
+							"    });\r",
+							"    \r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "auth_token",
+							"value": "{{token}}",
+							"type": "text"
+						},
+						{
+							"key": "age",
+							"value": "34",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Rust",
+							"type": "text"
+						},
+						{
+							"key": "weight",
+							"value": "70",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/test_pet_info",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"test_pet_info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_test_user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body is correct\", function () {\r",
+							"    pm.response.to.have.body({\"age\":\"34\",\"family\":{\"children\":[[\"Alex\",24],[\"Kate\",12]],\"u_salary_1_5_year\":4000},\"name\":\"Rust\",\"salary\":1000}\r",
+							");\r",
+							"});\r",
+							"//сетаем в переменную Name значение из body респонса  \r",
+							"pm.test(\"Name_env\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"Name\", jsonData.name);\r",
+							"});\r",
+							"//проверяем что значение поля name из тела запроса равно значению Name из коружения\r",
+							"pm.test(\"Name = name\", function () {\r",
+							"   var jsonData = pm.response.json();\r",
+							"   pm.expect(jsonData.name).to.eql(pm.environment.get('Name'));\r",
+							"   });\r",
+							"//проверяем что значение поля age из тела ответа равно значению поля age из тела запроса\r",
+							"pm.test(\"age_resp = age_req\", function () {\r",
+							"   var jsonData = pm.response.json();\r",
+							"   pm.expect(jsonData.age).to.eql(pm.request.body.formdata.get('age'));\r",
+							"   });\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "auth_token",
+							"value": "{{token}}",
+							"type": "text"
+						},
+						{
+							"key": "age",
+							"value": "34",
+							"type": "text"
+						},
+						{
+							"key": "salary",
+							"value": "{{salary}}",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Rust",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/get_test_user",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"get_test_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "currency",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"function getRandomFloat(min, max) {\r",
+							"  return Math.floor(Math.random() * (max - min)) + min;\r",
+							"}\r",
+							"let Cur_ID = getRandomFloat(1, 355);\r",
+							"//console.log(Cur_ID);\r",
+							"\r",
+							"pm.test(\"Cur_ID\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"Cur_ID\", Cur_ID);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "auth_token",
+							"value": "{{token}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/currency",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"currency"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "curr_byn",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var schema = {\r",
+							"    \"items\": {\r",
+							"        \"type\": \"boolean\"\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "auth_token",
+							"value": "{{token}}",
+							"type": "text"
+						},
+						{
+							"key": "curr_code",
+							"value": "{{Cur_ID}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{url}}/curr_byn",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"curr_byn"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
