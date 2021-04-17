@@ -2,6 +2,7 @@
 
 SELECT DISTINCT model, speed, hd
 FROM PC
+
 WHERE price < 500
 
 2.Найдите производителей принтеров. Вывести: maker
@@ -94,3 +95,17 @@ WHERE price > 1000
 SELECT AVG(speed) 
 FROM product JOIN pc
 ON product.model = pc.model AND product.maker = 'A'
+
+14. Найдите класс, имя и страну для кораблей из таблицы Ships, имеющих не менее 10 орудий.
+
+SELECT Classes.class, name, country
+FROM Ships JOIN Classes
+ON Ships.class = Classes.class
+WHERE numGuns >= 10
+
+15. Найдите размеры жестких дисков, совпадающих у двух и более PC. Вывести: HD
+
+SELECT hd
+FROM pc
+GROUP BY hd
+HAVING COUNT(hd) >= 2
