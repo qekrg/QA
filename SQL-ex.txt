@@ -103,7 +103,7 @@ FROM Ships JOIN Classes
 ON Ships.class = Classes.class
 WHERE numGuns >= 10
 
-15. Найдите размеры жестких дисков, совпадающих у двух и более PC. Вывести: HD
+15.  Найдите размеры жестких дисков, совпадающих у двух и более PC. Вывести: HD
 
 SELECT hd
 FROM pc
